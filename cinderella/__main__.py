@@ -284,8 +284,7 @@ def get_help(bot: Bot, update: Update):
 
         update.effective_message.reply_text("Contact me in PM to get Instant help.",
                                             reply_markup=InlineKeyboardMarkup(
-                                                [[InlineKeyboardButton(text="Help",url="t.me/{}?start=help".format(bot.username))],
-                                                [InlineKeyboardButton(text="🛡Contact Creator",url="https://t.me/Mr_Y00")]]))
+                                                [[InlineKeyboardButton(text="Help",url="t.me/{}?start=help".format(bot.username))]]))
 
         return
 
