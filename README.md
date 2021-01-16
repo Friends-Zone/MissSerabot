@@ -19,3 +19,4 @@ Modular Telegram bot for managing your groups with a extras features with Hunter
 ### Click Below Image to Deploy
 [![Deploy](https://telegra.ph/file/ab422f057cd06ae127388.jpg)](https://heroku.com/deploy?template=https://github.com/Sur-vivor/CinderellaProBot.git)
 
+### Its A Powerful Telegram Bot With Advanced Modules To Manage Ur Groups
