@@ -31,7 +31,7 @@ Hey there! *{}*
 
 My name is *{}*\nI am here to help you to manage your groups by my pro modules, tpye /help to get info about how to use me!
 
-*You will get my daily updates at @SeraSupport*
+*You will get my daily updates at @Serasupportchat*
 """
 
 HELP_STRINGS = """
@@ -45,7 +45,7 @@ the things I can help you with.
  🌀 - /help <module name>: PM's you info about that module.
  🌀 - /settings:
 
-🔈If U Want Any Support Or Have Any Query Related to Bot u can visit @SeraSupport
+🔈If U Want Any Support Or Have Any Query Related to Bot u can visit @Serasupportchat
 
  🔹 - in PM: will send you your settings for all supported modules.
  🔸 - in a group: will redirect you to pm, with all that chat's settings.
@@ -62,8 +62,7 @@ def vercheck() -> str:
 
 
 SOURCE_STRING = """
-⚡I'm built in python3, using the python-telegram-bot library.
-⚡Sorry But I can't give u permission to clone me 😊
+▪️*Hello Sir Here Is The My* [Source Code](https://t.me/HackerzKaBot)
 """
 
 
