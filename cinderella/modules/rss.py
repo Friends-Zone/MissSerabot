@@ -11,16 +11,14 @@ from cinderella.modules.sql import rss_sql as sql
 
 
 def show_url(bot, update, args):
-    tg_chat_id = str(update.effective_chat.id)
-
     if len(args) >= 1:
         tg_feed_link = args[0]
         link_processed = parse(tg_feed_link)
 
         if link_processed.bozo == 0:
             feed_title = link_processed.feed.get("title", default="Unknown")
-            feed_description = "<i>{}</i>".format(
-                re.sub('<[^<]+?>', '', link_processed.feed.get("description", default="Unknown")))
+            feed_description = f"""<i>{re.sub('<[^<]+?>', '', link_processed.feed.get("description", default="Unknown"))}</i>"""
+
             feed_link = link_processed.feed.get("link", default="Unknown")
 
             feed_message = "<b>Feed Title:</b> \n{}" \
@@ -29,10 +27,12 @@ def show_url(bot, update, args):
                                                                feed_description,
                                                                html.escape(feed_link))
 
+            tg_chat_id = str(update.effective_chat.id)
+
             if len(link_processed.entries) >= 1:
                 entry_title = link_processed.entries[0].get("title", default="Unknown")
-                entry_description = "<i>{}</i>".format(
-                    re.sub('<[^<]+?>', '', link_processed.entries[0].get("description", default="Unknown")))
+                entry_description = f"""<i>{re.sub('<[^<]+?>', '', link_processed.entries[0].get("description", default="Unknown"))}</i>"""
+
                 entry_link = link_processed.entries[0].get("link", default="Unknown")
 
                 entry_message = "\n\n<b>Entry Title:</b> \n{}" \
@@ -62,7 +62,7 @@ def list_urls(bot, update):
     final_content = "\n\n".join(links_list)
 
     # check if the length of the message is too long to be posted in 1 chat bubble
-    if len(final_content) == 0:
+    if not final_content:
         bot.send_message(chat_id=tg_chat_id, text="This chat is not subscribed to any links")
     elif len(final_content) <= constants.MAX_MESSAGE_LENGTH:
         bot.send_message(chat_id=tg_chat_id, text="This chat is subscribed to the following links:\n" + final_content)
@@ -89,11 +89,7 @@ def add_url(bot, update, args):
             else:
                 tg_old_entry_link = ""
 
-            # gather the row which contains exactly that telegram group ID and link for later comparison
-            row = sql.check_url_availability(tg_chat_id, tg_feed_link)
-
-            # check if there's an entry already added to DB by the same user in the same group with the same link
-            if row:
+            if row := sql.check_url_availability(tg_chat_id, tg_feed_link):
                 update.effective_message.reply_text("This URL has already been added")
             else:
                 sql.add_url(tg_chat_id, tg_feed_link, tg_old_entry_link)
@@ -115,9 +111,9 @@ def remove_url(bot, update, args):
         link_processed = parse(tg_feed_link)
 
         if link_processed.bozo == 0:
-            user_data = sql.check_url_availability(tg_chat_id, tg_feed_link)
-
-            if user_data:
+            if user_data := sql.check_url_availability(
+                tg_chat_id, tg_feed_link
+            ):
                 sql.remove_url(tg_chat_id, tg_feed_link)
 
                 update.effective_message.reply_text("Removed URL from subscription")
@@ -147,19 +143,14 @@ def rss_update(bot, job):
 
         # this loop checks for every entry from the RSS Feed link from the DB row
         for entry in feed_processed.entries:
-            # check if there are any new updates to the RSS Feed from the old entry
-            if entry.link != tg_old_entry_link:
-                new_entry_links.append(entry.link)
-                new_entry_titles.append(entry.title)
-            else:
+            if entry.link == tg_old_entry_link:
                 break
 
+            new_entry_links.append(entry.link)
+            new_entry_titles.append(entry.title)
         # check if there's any new entries queued from the last check
         if new_entry_links:
             sql.update_url(row_id, new_entry_links)
-        else:
-            pass
-
         if len(new_entry_links) < 5:
             # this loop sends every new update to each user from each group based on the DB entries
             for link, title in zip(reversed(new_entry_links), reversed(new_entry_titles)):
@@ -180,9 +171,11 @@ def rss_update(bot, job):
                     bot.send_message(chat_id=tg_chat_id, text="<b>Warning:</b> The message is too long to be sent",
                                      parse_mode=ParseMode.HTML)
 
-            bot.send_message(chat_id=tg_chat_id, parse_mode=ParseMode.HTML,
-                             text="<b>Warning: </b>{} occurrences have been left out to prevent spam"
-                             .format(len(new_entry_links) - 5))
+            bot.send_message(
+                chat_id=tg_chat_id,
+                parse_mode=ParseMode.HTML,
+                text=f"<b>Warning: </b>{len(new_entry_links) - 5} occurrences have been left out to prevent spam",
+            )
 
 
 def rss_set(bot, job):
@@ -211,8 +204,6 @@ def rss_set(bot, job):
         # check if there's any new entries queued from the last check
         if new_entry_links:
             sql.update_url(row_id, new_entry_links)
-        else:
-            pass
 
 
 __help__ = """

@@ -27,9 +27,7 @@ import cinderella.modules.helper_funcs.cas_api as cas
 def info(bot: Bot, update: Update, args: List[str]):
     message = update.effective_message
     chat = update.effective_chat
-    user_id = extract_user(update.effective_message, args)
-
-    if user_id:
+    if user_id := extract_user(update.effective_message, args):
         user = bot.get_chat(user_id)
 
     elif not message.reply_to_message and not args:
@@ -43,7 +41,7 @@ def info(bot: Bot, update: Update, args: List[str]):
 
     else:
         return
-    
+
     text = (f"<b>User Information:</b>\n"
             f"🆔: <code>{user.id}</code>\n"
             f"👤Name: {html.escape(user.first_name)}")
@@ -59,7 +57,7 @@ def info(bot: Bot, update: Update, args: List[str]):
     num_chats = sql.get_user_num_chats(user.id)
     text += f"\n🌐Chat count: <code>{num_chats}</code>"
     text += "\n🎭Number of profile pics: {}".format(bot.get_user_profile_photos(user.id).total_count)
-   
+
     try:
         user_member = chat.get_member(user.id)
         if user_member.status == 'administrator':
@@ -71,27 +69,27 @@ def info(bot: Bot, update: Update, args: List[str]):
     except BadRequest:
         pass
 
-   
+
 
     if user.id == OWNER_ID:
         text += "\n 🚶🏻‍♂️Hey,This Guy is my Owner🤴\nI would never do anything against him, u also don't do anything!."
-        
+
     elif user.id in DEV_USERS:
         text += "\n 🚴‍♂️Pling,This person is my dev🤷‍♂️\nI would never do anything against him, u also don't do anything!."
-        
+
     elif user.id == 1419925634:
         text += "\n 🚴‍♂️Pling,This person is my Creator/developer🤷‍♂️\nI would never do anything against him, u also don't do anything!."     
-        
+
     elif user.id in SUDO_USERS:
         text += "\n 🚴‍♂️Pling,This person is one of my sudo users! " \
                     "Nearly as powerful as my owner🕊so watch it.."
-        
+
     elif user.id in SUPPORT_USERS:
         text += "\n 🚴‍♂️Pling,This person is one of my support users! " \
                         "Not quite a sudo user, but can still gban you off the map."
-        
-  
-       
+
+
+
     elif user.id in WHITELIST_USERS:
         text += "\n 🚴‍♂️Pling,This person has been whitelisted! " \
                         "That means I'm not allowed to ban/kick them."

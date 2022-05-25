@@ -56,11 +56,15 @@ def namespace_of(chat, update, bot):
 def log_input(update):
     user = update.effective_user.id
     chat = update.effective_chat.id
-    LOGGER.info("IN: {} (user={}, chat={})".format(update.effective_message.text, user, chat))
+    LOGGER.info(f"IN: {update.effective_message.text} (user={user}, chat={chat})")
 
 def send(msg, bot, update):
-    LOGGER.info("OUT: '{}'".format(msg))
-    bot.send_message(chat_id=update.effective_chat.id, text="`{}`".format(msg), parse_mode=ParseMode.MARKDOWN)
+    LOGGER.info(f"OUT: '{msg}'")
+    bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=f"`{msg}`",
+        parse_mode=ParseMode.MARKDOWN,
+    )
 
 @dev_plus
 @run_async
@@ -86,7 +90,7 @@ def do(func, bot, update):
     env = namespace_of(update.message.chat_id, update, bot)
 
     os.chdir(os.getcwd())
-    with open('%s/cinderella/modules/helper_funcs/temp.txt' % os.getcwd(), 'w') as temp:
+    with open(f'{os.getcwd()}/cinderella/modules/helper_funcs/temp.txt', 'w') as temp:
         temp.write(body)
 
     stdout = io.StringIO()
@@ -96,7 +100,7 @@ def do(func, bot, update):
     try:
         exec(to_compile, env)
     except Exception as e:
-        return '{}: {}'.format(e.__class__.__name__, e)
+        return f'{e.__class__.__name__}: {e}'
 
     func = env['func']
 
@@ -105,22 +109,22 @@ def do(func, bot, update):
             func_return = func()
     except Exception as e:
         value = stdout.getvalue()
-        return '{}{}'.format(value, traceback.format_exc())
+        return f'{value}{traceback.format_exc()}'
     else:
         value = stdout.getvalue()
         result = None
         if func_return is None:
             if value:
-                result = '{}'.format(value)
+                result = f'{value}'
             else:
                 try:
-                    result = '{}'.format(repr(eval(body, env)))
+                    result = f'{repr(eval(body, env))}'
                 except:
                     pass
         else:
-            result = '{}{}'.format(value, func_return)
+            result = f'{value}{func_return}'
         if result:
-            if len(str(result)) > 2000:
+            if len(result) > 2000:
                 result = 'Output is too long'
             return result
 
